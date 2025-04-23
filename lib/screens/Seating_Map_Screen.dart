@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// Helper function to convert opacity to alpha
+int opacityToAlpha(double opacity) {
+  return (opacity.clamp(0.0, 1.0) * 255).round();
+}
+
 class SeatingMapScreen extends StatelessWidget {
   final String venue;
   final String mapAsset;
@@ -48,7 +53,7 @@ class SeatingMapScreen extends StatelessWidget {
           preferredSize: Size.fromHeight(1.0),
           child: Container(
             height: 1.0,
-            color: Color(0xFFDAB85A).withOpacity(0.3), // Subtle gold divider
+            color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)), // Subtle gold divider
           ),
         ),
       ),
@@ -92,15 +97,15 @@ class SeatingMapScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Color(0xFF1E2D23).withOpacity(0.7), // Hunter green background with transparency
+                        color: Color(0xFF1E2D23).withAlpha(opacityToAlpha(0.7)), // Hunter green background with transparency
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Color(0xFFDAB85A).withOpacity(0.3), // Muted gold border
+                          color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)), // Muted gold border
                           width: 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withAlpha(opacityToAlpha(0.3)),
                             blurRadius: 8,
                             offset: Offset(0, 3),
                           ),
@@ -123,7 +128,7 @@ class SeatingMapScreen extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.image_not_supported,
-                                      color: Color(0xFFDAB85A).withOpacity(0.5),
+                                      color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.5)),
                                       size: 50,
                                     ),
                                     SizedBox(height: 10),
@@ -155,7 +160,7 @@ class SeatingMapScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.raleway(
                       textStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withAlpha(opacityToAlpha(0.7)),
                         fontSize: 14,
                         fontStyle: FontStyle.italic,
                       ),
@@ -173,7 +178,7 @@ class SeatingMapScreen extends StatelessWidget {
                 height: 40,
                 width: 40,
                 decoration: BoxDecoration(
-                  color: Color(0xFFC06C84).withOpacity(0.1), // Very subtle cherry blossom pink
+                  color: Color(0xFFC06C84).withAlpha(opacityToAlpha(0.1)), // Very subtle cherry blossom pink
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
@@ -181,7 +186,7 @@ class SeatingMapScreen extends StatelessWidget {
                     'assets/GoldJerry.png',
                     width: 30,
                     height: 30,
-                    color: Color(0xFFDAB85A).withOpacity(0.8),
+                    color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.8)),
                   ),
                 ),
               ),

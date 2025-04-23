@@ -2,8 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'color_screen.dart';
 import '../data.dart';
+import 'jerry_video_screen.dart'; // Import the new video screen
 
-class ConcertListScreen extends StatelessWidget {
+// Helper function to convert opacity to alpha
+int opacityToAlpha(double opacity) {
+  return (opacity.clamp(0.0, 1.0) * 255).round();
+}
+
+class ConcertListScreen extends StatefulWidget {
+   ConcertListScreen({super.key});
+
+  @override
+  State<ConcertListScreen> createState() => _ConcertListScreenState();
+}
+
+class _ConcertListScreenState extends State<ConcertListScreen> {
   final List<Concert> concerts = [
     Concert(
       venue: 'Gas South Arena',
@@ -22,6 +35,8 @@ class ConcertListScreen extends StatelessWidget {
       city: 'Greensboro, NC',
       date: 'September 20, 2025',
       color: Colors.deepPurple,
+      // Add a subtle hint about the Easter egg
+      description: 'Local legend says Jerry dances when summoned three times.',
     ),
     Concert(
       venue: 'Barclays Center',
@@ -52,6 +67,8 @@ class ConcertListScreen extends StatelessWidget {
       city: 'Cleveland, OH',
       date: 'September 27, 2025',
       color: Colors.deepOrange,
+      // Add another subtle hint
+      description: 'Three taps at the corner might reveal something special.',
     ),
     Concert(
       venue: 'Allstate Arena',
@@ -76,6 +93,8 @@ class ConcertListScreen extends StatelessWidget {
       city: 'Denver, CO',
       date: 'October 3, 2025',
       color: Colors.deepOrange,
+      // Add a third hint
+      description: 'Third time\'s the charm when looking for Jerry\'s moves.',
     ),
     Concert(
       venue: 'Maverik Center',
@@ -109,7 +128,66 @@ class ConcertListScreen extends StatelessWidget {
     ),
   ];
 
-  ConcertListScreen({super.key});
+  // Easter egg variables
+  int _jerryTapCount = 0;
+  final int _requiredTaps = 3; // Number of taps to trigger Easter egg
+  DateTime? _lastTapTime;
+  final _tapTimeThreshold = const Duration(seconds: 2); // Time between taps
+
+  // Handle Jerry taps for Easter egg
+  void _handleJerryTap() {
+    final now = DateTime.now();
+    
+    // Reset counter if too much time has passed since last tap
+    if (_lastTapTime != null && 
+        now.difference(_lastTapTime!) > _tapTimeThreshold) {
+      _jerryTapCount = 0;
+    }
+    
+    setState(() {
+      _jerryTapCount++;
+      _lastTapTime = now;
+      
+      // Add subtle visual feedback on taps
+      if (_jerryTapCount == 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Jerry noticed you.', 
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.black,
+            duration: Duration(milliseconds: 500),
+          ),
+        );
+      } else if (_jerryTapCount == 2) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Jerry seems interested...', 
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.black,
+            duration: Duration(milliseconds: 500),
+          ),
+        );
+      }
+    });
+    
+    // Check if we've reached the required number of taps
+    if (_jerryTapCount >= _requiredTaps) {
+      _showJerryDancingVideo();
+      _jerryTapCount = 0; // Reset counter
+    }
+  }
+  
+  // Show Jerry's dancing video Easter egg
+  void _showJerryDancingVideo() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => JerryVideoScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,22 +207,44 @@ class ConcertListScreen extends StatelessWidget {
           ),
         ),
         elevation: 0,
-        title: Text(
-          'PROJEKT ATLANTIC',
-          style: GoogleFonts.cinzel(
-            textStyle: TextStyle(
-              color: Color(0xFFDAB85A), // Muted gold text
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2.0,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'PROJEKT ATLANTIC',
+              style: GoogleFonts.cinzel(
+                textStyle: TextStyle(
+                  color: Color(0xFFDAB85A), // Muted gold text
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2.0,
+                ),
+              ),
             ),
-          ),
+            // Add subtle visual hint - Three tiny dots
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Row(
+                children: List.generate(3, (index) => 
+                  Container(
+                    width: 4,
+                    height: 4,
+                    margin: EdgeInsets.symmetric(horizontal: 1),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.5)),
+                      shape: BoxShape.circle,
+                    ),
+                  )
+                ),
+              ),
+            ),
+          ],
         ),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
           child: Container(
             height: 1.0,
-            color: Color(0xFFDAB85A).withOpacity(0.3), // Subtle gold divider
+            color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)), // Subtle gold divider
           ),
         ),
         centerTitle: true,
@@ -176,7 +276,10 @@ class ConcertListScreen extends StatelessWidget {
                   final concert = concerts[index];
                   return TweenAnimationBuilder(
                     tween: Tween<double>(begin: 0, end: 1),
-                    duration: Duration(milliseconds: 600 + (index * 100)),
+                    // MODIFIED: Faster animation duration (200ms base + 25ms stagger instead of 600ms + 100ms)
+                    duration: Duration(milliseconds: 200 + (index * 25)),
+                    // MODIFIED: Faster curve
+                    curve: Curves.easeInOut,
                     builder: (context, double value, child) {
                       return Opacity(
                         opacity: value,
@@ -202,38 +305,60 @@ class ConcertListScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withAlpha(opacityToAlpha(0.3)),
                               blurRadius: 8,
                               offset: Offset(0, 3),
                             ),
                           ],
                           border: Border.all(
-                            color: Color(0xFFDAB85A).withOpacity(0.2), // Subtle gold border
+                            color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.2)), // Subtle gold border
                             width: 1,
                           ),
                         ),
                         child: Stack(
                           children: [
-                            // Subtle accent corner with Jerry
+                            // Subtle accent corner with Jerry - Now Interactive!
                             Positioned(
                               right: 0,
                               top: 0,
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFC06C84).withOpacity(0.1), // Very subtle cherry blossom pink
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(15),
-                                    bottomLeft: Radius.circular(15),
+                              child: GestureDetector(
+                                onTap: _handleJerryTap, // Handle taps for Easter egg
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFC06C84).withAlpha(opacityToAlpha(0.1)), // Very subtle cherry blossom pink
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(15),
+                                      bottomLeft: Radius.circular(15),
+                                    ),
                                   ),
-                                ),
-                                child: Center(
-                                  child: Image.asset(
-                                    'assets/GoldJerry.png',
-                                    width: 100,
-                                    height: 100,
-                                    color: Color(0xFFDAB85A).withOpacity(0.8),
+                                  child: Stack(
+                                    children: [
+                                      // Jerry image
+                                      Center(
+                                        child: Image.asset(
+                                          'assets/GoldJerry.png',
+                                          width: 100,
+                                          height: 100,
+                                          color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.8)),
+                                        ),
+                                      ),
+                                      // For venues with hints, add a subtle indicator
+                                      if (concert.description?.contains('Jerry') ?? false)
+                                        Positioned(
+                                          right: 2,
+                                          top: 2,
+                                          child: Container(
+                                            width: 6,
+                                            height: 6,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withAlpha(opacityToAlpha(0.3)),
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        )
+                                    ],
                                   ),
                                 ),
                               ),
@@ -268,7 +393,7 @@ class ConcertListScreen extends StatelessWidget {
                                     concert.city,
                                     style: GoogleFonts.raleway(
                                       textStyle: TextStyle(
-                                        color: Colors.white.withOpacity(0.8), // White text for good visibility
+                                        color: Colors.white.withAlpha(opacityToAlpha(0.8)), // White text for good visibility
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -278,12 +403,28 @@ class ConcertListScreen extends StatelessWidget {
                                     concert.date,
                                     style: GoogleFonts.raleway(
                                       textStyle: TextStyle(
-                                        color: Colors.white.withOpacity(0.6),
+                                        color: Colors.white.withAlpha(opacityToAlpha(0.6)),
                                         fontSize: 14,
                                         fontStyle: FontStyle.italic,
                                       ),
                                     ),
                                   ),
+                                  
+                                  // Display venue description (hint) if available
+                                  if (concert.description != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Text(
+                                        concert.description!,
+                                        style: GoogleFonts.raleway(
+                                          textStyle: TextStyle(
+                                            color: Colors.white.withAlpha(opacityToAlpha(0.4)),
+                                            fontSize: 12,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   
                                   // Subtle divider
                                   Padding(
@@ -294,7 +435,7 @@ class ConcertListScreen extends StatelessWidget {
                                         gradient: LinearGradient(
                                           colors: [
                                             Colors.transparent,
-                                            Color(0xFFDAB85A).withOpacity(0.3),
+                                            Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)),
                                             Colors.transparent,
                                           ],
                                         ),

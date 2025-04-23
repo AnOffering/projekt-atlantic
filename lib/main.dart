@@ -57,8 +57,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.dark(
           primary: const Color(0xFFDAB85A), // Muted gold as primary
           secondary: const Color(0xFF557053), // Medium hunter green as secondary
-          tertiary: Colors.black87,
-          background: const Color(0xFF1E2D23), // Hunter green background
+          tertiary: Colors.black87, // Hunter green background
           surface: const Color(0xFF294734), // Deeper hunter green surface
         ),
       ),

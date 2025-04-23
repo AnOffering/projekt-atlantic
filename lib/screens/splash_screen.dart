@@ -2,6 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'snake_game.dart'; // Import the snake game
+
+// Helper function to convert opacity to alpha
+int opacityToAlpha(double opacity) {
+  return (opacity.clamp(0.0, 1.0) * 255).round();
+}
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           x: random.nextDouble() * 400,
           y: random.nextDouble() * 800,
           radius: random.nextDouble() * 2 + 1,
-          color: Color(0xFFC06C84).withOpacity(random.nextDouble() * 0.5 + 0.2), // Cherry blossom pink
+          color: Color(0xFFC06C84).withAlpha(opacityToAlpha(random.nextDouble() * 0.5 + 0.2)), // Cherry blossom pink
           speed: random.nextDouble() * 0.5 + 0.2,
           isGold: false,
         ),
@@ -45,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           x: random.nextDouble() * 400,
           y: random.nextDouble() * 800,
           radius: random.nextDouble() * 2.5 + 1.5, // Slightly larger
-          color: Color(0xFFDAB85A).withOpacity(random.nextDouble() * 0.6 + 0.4), // More vibrant gold
+          color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(random.nextDouble() * 0.6 + 0.4)), // More vibrant gold
           speed: random.nextDouble() * 0.3 + 0.1, // Slightly slower for layered effect
           isGold: true,
         ),
@@ -67,6 +73,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     } else {
       print('Could not launch $url');
     }
+  }
+  
+  // Launch the Snake game
+  void _launchSnakeGame() {
+    Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => const SnakeGame(),
+      ),
+    );
   }
 
   @override
@@ -138,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Color(0xFFDAB85A).withOpacity(0.15 * value), // Animated glow
+                              color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.15 * value)), // Animated glow
                               blurRadius: 20 * value,
                               spreadRadius: 2 * value,
                             ),
@@ -170,13 +186,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withAlpha(opacityToAlpha(0.3)),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
                         ),
                       ],
                       border: Border.all(
-                        color: const Color(0xFFDAB85A).withOpacity(0.4),
+                        color: const Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.4)),
                         width: 1,
                       ),
                     ),
@@ -211,19 +227,19 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   onTap: _launchLinktree,
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-                    margin: const EdgeInsets.symmetric(vertical: 20),
+                    margin: const EdgeInsets.symmetric(vertical: 10), // Reduced vertical margin
                     decoration: BoxDecoration(
                       color: Color(0xFF1E2D23), // Hunter green background
                       borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withAlpha(opacityToAlpha(0.3)),
                           blurRadius: 8,
                           offset: Offset(0, 3),
                         ),
                       ],
                       border: Border.all(
-                        color: Color(0xFFDAB85A).withOpacity(0.4), // Muted gold border
+                        color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.4)), // Muted gold border
                         width: 1,
                       ),
                     ),
@@ -247,9 +263,56 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           opacity: 0.7,
                           child: Icon(
                             Icons.eco, // Leaf/nature icon
-                            color: Color(0xFFC06C84).withOpacity(0.6), // Cherry blossom pink
+                            color: Color(0xFFC06C84).withAlpha(opacityToAlpha(0.6)), // Cherry blossom pink
                             size: 20,
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
+                // Snake Game button - "While You Wait"
+                GestureDetector(
+                  onTap: _launchSnakeGame,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1E2D23), // Hunter green background
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(opacityToAlpha(0.3)),
+                          blurRadius: 8,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.4)), // Muted gold border
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'WHILE YOU WAIT',
+                          style: GoogleFonts.cinzel(
+                            textStyle: TextStyle(
+                              color: Color(0xFFDAB85A), // Muted gold text
+                              fontSize: 16, // Slightly smaller font
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        // Game icon
+                        Icon(
+                          Icons.videogame_asset,
+                          color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.8)),
+                          size: 20,
                         ),
                       ],
                     ),
@@ -367,7 +430,7 @@ class GoldParticlePainter extends CustomPainter {
       
       // Add a smaller, brighter center to the gold particles
       final highlightPaint = Paint()
-        ..color = Color(0xFFDAB85A).withOpacity(0.8)
+        ..color = Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.8))
         ..style = PaintingStyle.fill;
         
       canvas.drawCircle(

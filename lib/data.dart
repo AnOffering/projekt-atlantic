@@ -5,14 +5,13 @@ class Concert {
   final String city;
   final String date;
   final Color color;
+  final String? description; // Added for Easter egg hints
 
   Concert({
     required this.venue,
     required this.city,
     required this.date,
     required this.color,
+    this.description, // Optional field for hints
   });
 }
-
-// The Concert class now accepts the dark green and gold colors
-// The concert list has been moved to concert_list_screen.dart for simplicity

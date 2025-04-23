@@ -4,6 +4,11 @@ import '../data.dart';
 import 'full_screen_color.dart';
 import 'Seating_Map_Screen.dart'; // Import the seating map screen
 
+// Helper function to convert opacity to alpha
+int opacityToAlpha(double opacity) {
+  return (opacity.clamp(0.0, 1.0) * 255).round();
+}
+
 class ColorScreen extends StatelessWidget {
   final Concert concert;
 
@@ -100,7 +105,7 @@ class ColorScreen extends StatelessWidget {
           preferredSize: Size.fromHeight(1.0),
           child: Container(
             height: 1.0,
-            color: Color(0xFFDAB85A).withOpacity(0.3), // Subtle gold divider
+            color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)), // Subtle gold divider
           ),
         ),
       ),
@@ -129,15 +134,15 @@ class ColorScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Color(0xFF1E2D23).withOpacity(0.8), // Hunter green background with transparency
+                  color: Color(0xFF1E2D23).withAlpha(opacityToAlpha(0.8)), // Hunter green background with transparency
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: Color(0xFFDAB85A).withOpacity(0.3), // Muted gold border
+                    color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)), // Muted gold border
                     width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withAlpha(opacityToAlpha(0.3)),
                       blurRadius: 8,
                       offset: Offset(0, 3),
                     ),
@@ -163,7 +168,7 @@ class ColorScreen extends StatelessWidget {
                       concert.date,
                       style: GoogleFonts.raleway(
                         textStyle: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withAlpha(opacityToAlpha(0.7)),
                           fontSize: 16,
                         ),
                       ),
@@ -177,7 +182,7 @@ class ColorScreen extends StatelessWidget {
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
-                              Color(0xFFDAB85A).withOpacity(0.3),
+                              Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)),
                               Colors.transparent,
                             ],
                           ),
@@ -203,7 +208,7 @@ class ColorScreen extends StatelessWidget {
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Color(0xFFDAB85A).withOpacity(0.5)),
+                        side: BorderSide(color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.5))),
                         padding: EdgeInsets.symmetric(
                           horizontal: screenWidth * 0.03,
                           vertical: screenWidth * 0.015
@@ -229,7 +234,7 @@ class ColorScreen extends StatelessWidget {
                 Container(
                   width: 200,
                   height: 1,
-                  color: Color(0xFFDAB85A).withOpacity(0.3),
+                  color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)),
                 ),
                 // Title with background
                 Container(
@@ -237,7 +242,7 @@ class ColorScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Color(0xFF121212),
                     border: Border.all(
-                      color: Color(0xFFDAB85A).withOpacity(0.3),
+                      color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)),
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(20),
@@ -276,49 +281,62 @@ class ColorScreen extends StatelessWidget {
   Widget _buildColorChoice(Color color, String label, BuildContext context) {
     final songInfo = _songData[color] ?? {'title': 'Unknown', 'description': 'Details coming soon'};
     
+    // Function to navigate to full screen color
+    void _navigateToFullScreen() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => FullScreenColorScreen(color: color),
+        ),
+      );
+    }
+    
     return Column(
       children: [
-        // Color circle with no glow effect
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            // Simple color circle with gold border
-            Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color,
-                border: Border.all(
-                  color: Color(0xFFDAB85A).withOpacity(0.3),
-                  width: 1.5,
+        // Color circle with tap functionality
+        InkWell(
+          onTap: _navigateToFullScreen,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Simple color circle with gold border
+              Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color,
+                  border: Border.all(
+                    color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.3)),
+                    width: 1.5,
+                  ),
                 ),
               ),
-            ),
-            // Symbol overlay
-            if (color == Colors.deepPurple)
-              Icon(
-                Icons.auto_awesome, // Mystical symbol for purple
-                color: Colors.white.withOpacity(0.15), // Less intense white
-                size: 25, // Slightly smaller
-              )
-            else
-              Icon(
-                Icons.whatshot, // Fire-like symbol for orange
-                color: Colors.white.withOpacity(0.15), // Less intense white
-                size: 25, // Slightly smaller
-              ),
-          ],
+              // Symbol overlay
+              if (color == Colors.deepPurple)
+                Icon(
+                  Icons.auto_awesome, // Mystical symbol for purple
+                  color: Colors.white.withAlpha(opacityToAlpha(0.15)), // Less intense white
+                  size: 25, // Slightly smaller
+                )
+              else
+                Icon(
+                  Icons.whatshot, // Fire-like symbol for orange
+                  color: Colors.white.withAlpha(opacityToAlpha(0.15)), // Less intense white
+                  size: 25, // Slightly smaller
+                ),
+            ],
+          ),
         ),
         const SizedBox(height: 15),
         // Song title
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: Color(0xFF1E2D23).withOpacity(0.7),
+            color: Color(0xFF1E2D23).withAlpha(opacityToAlpha(0.7)),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Color(0xFFDAB85A).withOpacity(0.2),
+              color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.2)),
               width: 1,
             ),
           ),
@@ -339,10 +357,10 @@ class ColorScreen extends StatelessWidget {
           width: 150,
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            color: Color(0xFF1E2D23).withOpacity(0.5),
+            color: Color(0xFF1E2D23).withAlpha(opacityToAlpha(0.5)),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: Color(0xFFDAB85A).withOpacity(0.1),
+              color: Color(0xFFDAB85A).withAlpha(opacityToAlpha(0.1)),
               width: 1,
             ),
           ),
@@ -351,7 +369,7 @@ class ColorScreen extends StatelessWidget {
             textAlign: TextAlign.center,
             style: GoogleFonts.raleway(
               textStyle: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withAlpha(opacityToAlpha(0.8)),
                 fontSize: 12,
               ),
             ),
@@ -360,23 +378,16 @@ class ColorScreen extends StatelessWidget {
         const SizedBox(height: 20),
         // Button
         ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => FullScreenColorScreen(color: color),
-              ),
-            );
-          },
+          onPressed: _navigateToFullScreen,
           style: ElevatedButton.styleFrom(
-            backgroundColor: color.withOpacity(0.7), // Slightly more muted
+            backgroundColor: color.withAlpha(opacityToAlpha(0.7)), // Slightly more muted
             foregroundColor: Colors.white, // White text for both colors
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
             elevation: 4, // Less elevation
-            shadowColor: color.withOpacity(0.3), // More subtle shadow
+            shadowColor: color.withAlpha(opacityToAlpha(0.3)), // More subtle shadow
           ),
           child: Text(
             'ILLUMINATE',

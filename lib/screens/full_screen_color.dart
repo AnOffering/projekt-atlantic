@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:screen_brightness/screen_brightness.dart';
+
+// Helper function to convert opacity to alpha
+int opacityToAlpha(double opacity) {
+  return (opacity.clamp(0.0, 1.0) * 255).round();
+}
 
 class FullScreenColorScreen extends StatefulWidget {
   final Color color;
@@ -14,27 +18,25 @@ class FullScreenColorScreen extends StatefulWidget {
 class _FullScreenColorScreenState extends State<FullScreenColorScreen> with SingleTickerProviderStateMixin {
   double? _previousBrightness;
   late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
-    _setMaxBrightness();
+    _setBrightness();
     
-    // Setup pulse animation for the light effect with a slower, more ethereal pace
+    // Setup pulse animation for the light effect
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 6), // slower animation for less eye strain
+      duration: const Duration(seconds: 6),
     )..repeat(reverse: true);
-    
-    _pulseAnimation = Tween<double>(begin: 0.9, end: 1.0).animate( // less intense pulsing
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
   }
 
-  Future<void> _setMaxBrightness() async {
+  Future<void> _setBrightness() async {
     try {
+      // Get current brightness to restore later
       _previousBrightness = await ScreenBrightness().current;
+      
+      // Set brightness to maximum - use correct method for version 0.2.0+
       await ScreenBrightness().setScreenBrightness(1.0);
     } catch (e) {
       debugPrint('Failed to change brightness: $e');
@@ -64,52 +66,45 @@ class _FullScreenColorScreenState extends State<FullScreenColorScreen> with Sing
       onTap: () => Navigator.pop(context),
       child: Scaffold(
         backgroundColor: widget.color,
-        body: AnimatedBuilder(
-          animation: _pulseAnimation,
-          builder: (context, child) {
-            return Stack(
-              children: [
-                // Solid color background (100% opacity)
-                Container(
-                  color: widget.color,
-                ),
-                
-                // Bottom "Tap to return" message
-                SafeArea(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      margin: EdgeInsets.only(bottom: 30),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Text(
-                        'TAP TO RETURN',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.cinzel(
-                          textStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 3.0,
-                            shadows: [
-                              Shadow(
-                                blurRadius: 4.0,
-                                color: Colors.black.withOpacity(0.4),
-                                offset: const Offset(0, 0),
-                              ),
-                            ],
-                          ),
+        body: Stack(
+          children: [
+            // Solid color background (100% opacity)
+            Container(
+              color: widget.color,
+            ),
+            
+            // Bottom "Tap to return" message
+            SafeArea(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  margin: const EdgeInsets.only(bottom: 30),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(opacityToAlpha(0.2)),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Text(
+                    'TAP TO RETURN',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 3.0,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 4.0,
+                          color: Colors.black.withAlpha(opacityToAlpha(0.4)),
+                          offset: const Offset(0, 0),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );

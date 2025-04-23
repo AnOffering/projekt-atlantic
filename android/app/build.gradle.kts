@@ -14,7 +14,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.projekt_atlantic"
+    namespace = "com.AnOffering.projekt_atlantic"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -52,8 +52,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
         }
     }
+}
+
 }
 
 flutter {
