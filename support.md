@@ -4,7 +4,7 @@
 
 For support inquiries regarding the Projekt Atlantic app, please contact:
 
-Email: [your-support-email@example.com]
+Email: [Anoffering4@gmail.com]
 
 ## Community Support
 
